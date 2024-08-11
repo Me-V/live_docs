@@ -1,3 +1,7 @@
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
+
 import type { Config } from 'tailwindcss';
 
 const { fontFamily } = require('tailwindcss/defaultTheme');
@@ -11,6 +15,7 @@ const config = {
     './src/**/*.{ts,tsx}',
   ],
   prefix: '',
+  
   theme: {
     container: {
       center: true,
@@ -63,7 +68,18 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), addVariablesForColors],
 } satisfies Config;
+
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+ 
+  addBase({
+    ":root": newVars,
+  });
+}
 
 export default config;
